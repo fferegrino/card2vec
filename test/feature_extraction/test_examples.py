@@ -1,10 +1,13 @@
+import json
 import random
+from pathlib import Path
 from unittest.mock import ANY, patch
 
 import numpy as np
 import pytest
 
 from card2vec.feature_extraction.examples import (
+    generate_all_examples,
     get_examples_for_deck,
     get_negative_samples,
     get_positive_samples,
@@ -129,3 +132,16 @@ def test_get_examples_for_deck(all_cards, n_negatives, window_size, shuffles):
     neg_samples_patch.assert_called_with(ANY, ANY, n_negatives, all_cards)
     pos_samples_patch.assert_called_with(ANY, ANY, window_size // 2)
     assert len(actual) == shuffles * deck_size
+
+
+@pytest.mark.parametrize(
+    ["n_negatives", "window_size", "shuffles"], [(2, 5, 1), (10, 15, 4)]
+)
+def test_generate_all_examples(fixtures_dir, n_negatives, window_size, shuffles):
+    decks = json.load(Path(fixtures_dir, "read", "decks.json").open())
+
+    ex = generate_all_examples(decks, window_size, n_negatives, shuffles)
+    import pdb
+
+    pdb.set_trace()
+    pass

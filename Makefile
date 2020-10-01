@@ -11,7 +11,7 @@ download:
 	kaggle datasets download -p input/yugioh-decks --unzip ioexception/yugioh-decks
 
 fmt:
-	$(WITH_PIPENV) isort --apply
+	$(WITH_PIPENV) isort . --apply
 	$(WITH_PIPENV) black --target-version py36 $(LINT_TARGETS)
 
 lint:

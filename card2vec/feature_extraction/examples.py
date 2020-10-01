@@ -1,3 +1,5 @@
+import multiprocessing as mp
+import os
 import random
 from typing import List
 
@@ -44,7 +46,27 @@ def get_examples_for_deck(
 
 
 def generate_all_examples(
-    decks: List[np.array], window_size: int, n_negatives: int, shuffles: int, n_jobs=-1
+    decks: List[dict],
+    window_size: int,
+    n_negatives: int,
+    shuffles: int,
 ):
+    deck_arrays = []
+    unique_cards = set()
+    for deck in decks:
+        deck_arrays.append(np.array(deck["main"] + deck["side"] + deck["extra"]))
+        unique_cards.update(deck["main"] + deck["side"] + deck["extra"])
+    all_cards = np.array(list(unique_cards))
 
-    pass
+    params = (
+        (deck_array, window_size, n_negatives, shuffles, all_cards)
+        for deck_array in deck_arrays
+    )
+
+    p = mp.Pool(2)
+    all_examples = p.starmap(get_examples_for_deck, params)
+    p.close()
+    p.join()
+    import pdb
+
+    pdb.set_trace()
