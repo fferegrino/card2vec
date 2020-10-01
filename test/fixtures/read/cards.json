@@ -1,0 +1,64 @@
+{
+    "card_by_id": {
+        "34541863": {
+            "id": "34541863",
+            "name": "\"A\" Cell Breeding Device",
+            "type": "Spell Card"
+        },
+        "64163367": {
+            "id": "64163367",
+            "name": "\"A\" Cell Incubator",
+            "type": "Spell Card"
+        },
+        "91231901": {
+            "id": "91231901",
+            "name": "\"A\" Cell Recombination Device",
+            "type": "Spell Card"
+        },
+        "73262676": {
+            "id": "73262676",
+            "name": "\"A\" Cell Scatter Burst",
+            "type": "Spell Card"
+        },
+        "37478723": {
+            "id": "37478723",
+            "name": "\"Infernoble Arms - Durendal\"",
+            "type": "Spell Card"
+        },
+        "64867422": {
+            "id": "64867422",
+            "name": "\"Infernoble Arms - Hauteclere\"",
+            "type": "Spell Card"
+        },
+        "90861137": {
+            "id": "90861137",
+            "name": "\"Infernoble Arms - Joyeuse\"",
+            "type": "Spell Card"
+        },
+        "44256816": {
+            "id": "44256816",
+            "name": "1st Movement Solo",
+            "type": "Spell Card"
+        }
+    },
+    "card_to_int": {
+        "34541863": 0,
+        "64163367": 1,
+        "91231901": 2,
+        "73262676": 3,
+        "37478723": 4,
+        "64867422": 5,
+        "90861137": 6,
+        "44256816": 7
+    },
+    "int_to_card": {
+        "0": "34541863",
+        "1": "64163367",
+        "2": "91231901",
+        "3": "73262676",
+        "4": "37478723",
+        "5": "64867422",
+        "6": "90861137",
+        "7": "44256816"
+    }
+}
