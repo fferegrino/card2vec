@@ -12,7 +12,9 @@ def get_positive_samples(position: int, deck: np.array, window: int):
     examples[:, 1] = deck[
         np.arange(position - window, position + window + 1) % len(deck)
     ]
-    return examples[examples[:, 0] != examples[:, 1]]
+    mask = np.ones(window * 2 + 1, dtype=bool)
+    mask[window] = False
+    return examples[mask]
 
 
 def get_negative_samples(
@@ -31,26 +33,33 @@ def get_examples_for_deck(
     shuffles: int,
     all_cards: np.array,
 ):
-    import pdb; pdb.set_trace()
     deck_copy = np.copy(deck)
-    window = window_size // 2
     deck_size = len(deck_copy)
-    window_examples = window_size - 1
+    window = window_size // 2
+    window_examples = window * 2
 
-
-    positive_examples = np.zeros((deck_size * shuffles * window_examples, 2))
-    negative_examples = np.zeros((deck_size * shuffles * n_negatives, 2))
+    positive_examples = np.zeros((deck_size * shuffles * window_examples, 2), dtype=int)
+    negative_examples = np.zeros((deck_size * shuffles * n_negatives, 2), dtype=int)
 
     for shuffle_id in range(shuffles):
         for position in range(deck_size):
-            positive_start = shuffle_id * deck_size + position * window_examples
-            positive_end = shuffle_id * deck_size + ((position * window_examples) + window_examples)
             positive = get_positive_samples(position, deck_copy, window)
-            if positive.shape != positive_examples[positive_start:positive_end,:].shape:
-                import pdb; pdb.set_trace()
-                pass
-
-            get_negative_samples(position, deck_copy, n_negatives, all_cards)
+            positive_start = (
+                shuffle_id * deck_size * window_examples + position * window_examples
+            )
+            positive_end = shuffle_id * deck_size * window_examples + (
+                (position * window_examples) + window_examples
+            )
+            positive_examples[positive_start:positive_end, :] = positive
+            negative = get_negative_samples(position, deck_copy, n_negatives, all_cards)
+            negative_start = (
+                shuffle_id * deck_size * n_negatives + position * n_negatives
+            )
+            negative_end = shuffle_id * deck_size * n_negatives + (
+                (position * n_negatives) + n_negatives
+            )
+            negative_examples[negative_start:negative_end, :] = negative
+        np.random.shuffle(deck_copy)
     return positive_examples, negative_examples
 
 
@@ -73,8 +82,29 @@ def generate_all_examples(
     )
 
     p = mp.Pool(2)
-    all_examples =[get_examples_for_deck(*param) for param in params] #p.starmap(get_examples_for_deck, params)
-    positives = []
-    negatives = []
+    all_examples = [
+        get_examples_for_deck(*param) for param in params
+    ]  # p.starmap(get_examples_for_deck, params)
+
     p.close()
     p.join()
+
+    positives, negatives = zip(*all_examples)
+    return np.concatenate(positives), np.concatenate(negatives)
+
+
+def generate_batches(
+    positive_examples: np.array,
+    negative_examples: np.array,
+    window_size: int,
+    n_negatives: int,
+):
+    window = window_size // 2
+    window_examples = window * 2
+    for pos, neg in zip(
+        range(0, positive_examples.shape[0], window_examples),
+        range(0, negative_examples.shape[0], n_negatives),
+    ):
+        yield positive_examples[pos : pos + window_examples, :], negative_examples[
+            neg : neg + n_negatives, :
+        ]
