@@ -68,6 +68,7 @@ def generate_all_examples(
     window_size: int,
     n_negatives: int,
     shuffles: int,
+    multiprocessing: bool = True,
 ):
     deck_arrays = []
     unique_cards = set()
@@ -81,13 +82,13 @@ def generate_all_examples(
         for deck_array in deck_arrays
     )
 
-    p = mp.Pool(2)
-    all_examples = [
-        get_examples_for_deck(*param) for param in params
-    ]  # p.starmap(get_examples_for_deck, params)
-
-    p.close()
-    p.join()
+    if multiprocessing:
+        pool = mp.Pool(2)
+        all_examples = pool.starmap(get_examples_for_deck, params)
+        pool.close()
+        pool.join()
+    else:
+        all_examples = [get_examples_for_deck(*param) for param in params]
 
     positives, negatives = zip(*all_examples)
     return np.concatenate(positives), np.concatenate(negatives)

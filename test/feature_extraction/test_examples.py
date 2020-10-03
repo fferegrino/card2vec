@@ -1383,7 +1383,7 @@ def test_generate_all_examples(
     decks = json.load(Path(fixtures_dir, "read", "decks.json").open())
 
     actual_positive, actual_negative = generate_all_examples(
-        decks, window_size, n_negatives, shuffles
+        decks, window_size, n_negatives, shuffles, multiprocessing=False
     )
     np.testing.assert_array_equal(actual_negative, expected_negative)
     np.testing.assert_array_equal(actual_positive, expected_positive)
