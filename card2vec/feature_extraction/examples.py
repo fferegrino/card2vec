@@ -83,7 +83,7 @@ def generate_all_examples(
     )
 
     if multiprocessing:
-        pool = mp.Pool(2)
+        pool = mp.Pool(mp.cpu_count() + 2)
         all_examples = pool.starmap(get_examples_for_deck, params)
         pool.close()
         pool.join()
